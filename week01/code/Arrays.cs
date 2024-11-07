@@ -21,7 +21,7 @@ public static class Arrays
         After the for loop is over, return the list of doubles.
         */
 
-        double[] multiples = [];
+        double[] multiples = new double[length];
         for (int i = 1; i <= length; i++) {
             multiples[i-1] = number * i;
         }
@@ -44,15 +44,13 @@ public static class Arrays
         // be implemented by another person.
 
         /*
-        Find the starting index for the last amount of items
         Using the GetRange method, get the last number of items defined by the amount parameter starting at the starting index
         Using the RemoveRange method, remove that same range from the orifgical data list.
         Using the InsertRange method, insert the list from the GetRange method into the data list starting at index 0
         */
 
-        int i_startOfRange = data.Count - amount + 1;
-        List<int> lastItems = data.GetRange(i_startOfRange, amount);
-        data.RemoveRange(i_startOfRange, amount);
+        List<int> lastItems = data.GetRange(data.Count - amount, amount);
+        data.RemoveRange(data.Count - amount, amount);
         data.InsertRange(0, lastItems);
     }
 }
