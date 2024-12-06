@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Diagnostics;
 
 public static class Recursion
 {
@@ -14,8 +15,13 @@ public static class Recursion
     /// </summary>
     public static int SumSquaresRecursive(int n)
     {
-        // TODO Start Problem 1
-        return 0;
+        if (n <= 0) {
+            return 0;
+        }
+        if (n == 1) {
+            return 1;
+        }
+        return n * n + SumSquaresRecursive(n - 1);
     }
 
     /// <summary>
@@ -39,7 +45,16 @@ public static class Recursion
     /// </summary>
     public static void PermutationsChoose(List<string> results, string letters, int size, string word = "")
     {
-        // TODO Start Problem 2
+        if (word.Length == size) {
+            results.Add(word);
+        }
+        else {
+            for (var i = 0; i < letters.Length; i++) {
+                var lettersLeft = letters.Remove(i, 1);
+                PermutationsChoose(results, lettersLeft, size, word + letters[i]);
+            }
+        }
+
     }
 
     /// <summary>
@@ -95,11 +110,16 @@ public static class Recursion
             return 2;
         if (s == 3)
             return 4;
-
-        // TODO Start Problem 3
+        if (remember == null) {
+            remember = new Dictionary<int, decimal>();
+        }
+        if (remember.ContainsKey(s)) {
+            return remember[s];
+        }
 
         // Solve using recursion
-        decimal ways = CountWaysToClimb(s - 1) + CountWaysToClimb(s - 2) + CountWaysToClimb(s - 3);
+        decimal ways = CountWaysToClimb(s - 1, remember) + CountWaysToClimb(s - 2, remember) + CountWaysToClimb(s - 3, remember);
+        remember[s] = ways;
         return ways;
     }
 
@@ -116,9 +136,29 @@ public static class Recursion
     /// Using recursion, insert all possible binary strings for a given pattern into the results list.  You might find 
     /// some of the string functions like IndexOf and [..X] / [X..] to be useful in solving this problem.
     /// </summary>
+    
+    /* if (word.Length == size) {
+            results.Add(word);
+        }
+        else {
+            for (var i = 0; i < letters.Length; i++) {
+                var lettersLeft = letters.Remove(i, 1);
+                PermutationsChoose(results, lettersLeft, size, word + letters[i]);
+            }
+        }
+    */
     public static void WildcardBinary(string pattern, List<string> results)
     {
-        // TODO Start Problem 4
+        var wildIndex = pattern.IndexOf('*');
+        if (wildIndex == -1) {
+            results.Add(pattern);
+        }
+        else {
+            var pattern0 = pattern.Substring(0, wildIndex) + "0" + pattern.Substring(wildIndex + 1);
+            var pattern1 = pattern.Substring(0, wildIndex) + "1" + pattern.Substring(wildIndex + 1);
+            WildcardBinary(pattern0, results);
+            WildcardBinary(pattern1, results);
+        }
     }
 
     /// <summary>
@@ -132,6 +172,26 @@ public static class Recursion
         if (currPath == null) {
             currPath = new List<ValueTuple<int, int>>();
         }
+
+        currPath.Add((x, y));
+        
+        if (maze.IsEnd(x, y)) {
+            results.Add(currPath.AsString());
+            currPath.RemoveAt(currPath.Count - 1);
+            return;
+        }
+        else {
+            List<(int, int)> directions = new(){(1, 0), (0, 1), (-1, 0), (0, -1)};
+            foreach (var direction in directions) {
+                var nextX = currPath[currPath.Count - 1].Item1 + direction.Item1;
+                var nextY = currPath[currPath.Count - 1].Item2 + direction.Item2;
+                if (maze.IsValidMove(currPath, nextX, nextY)) {
+                    SolveMaze(results, maze, nextX, nextY, currPath);
+                }
+            }
+            currPath.RemoveAt(currPath.Count - 1);
+        }
+
         
         // currPath.Add((1,2)); // Use this syntax to add to the current path
 
